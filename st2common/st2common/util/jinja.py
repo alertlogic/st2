@@ -87,11 +87,14 @@ def get_jinja_environment(allow_undefined=False, trim_blocks=True, lstrip_blocks
     """
     # Late import to avoid very expensive in-direct import (~1 second) when this function
     # is not called / used
-    import jinja2
+    from jinja2 import StrictUndefined, Undefined
+    from jinja2.sandbox import SandboxedEnvironment
 
-    undefined = jinja2.Undefined if allow_undefined else jinja2.StrictUndefined
-    env = jinja2.Environment(  # nosec
-        undefined=undefined, trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks
+    undefined = Undefined if allow_undefined else StrictUndefined
+    env = SandboxedEnvironment(  # nosec
+        undefined=undefined,
+        trim_blocks=trim_blocks,
+        lstrip_blocks=lstrip_blocks
     )
     env.filters.update(get_filters())
     env.tests["in"] = lambda item, list: item in list
